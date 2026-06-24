@@ -20,6 +20,10 @@
 			msm-id = <0x000002c5>;
 		};
 
+		kaanapali {
+			msm-id = <0x00000294>;
+		};
+
 		purwa {
 			msm-id = <0x000002c7>;
 		};
@@ -70,6 +74,10 @@
 
 		shikraiqs {
 			msm-id = <0x000002f7>;
+		};
+
+		sm8750 {
+			msm-id = <0x0000026a>;
 		};
 	};
 
