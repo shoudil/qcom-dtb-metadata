@@ -11,6 +11,7 @@
 #   ./build-qcom-dtb-image.sh [--kernel-repo <url>] [--kernel-branch <branch>]
 #                             [--kernel-dir <path>] [--kobj <path>]
 #                             [--out <file>] [--size <MB>]
+#                             [--soc <soc-name>...] [--board <board-name>...]
 
 set -euo pipefail
 
@@ -22,6 +23,8 @@ KERNEL_DIR="kernel-src"
 KOBJ="kobj"
 DTB_BIN="dtb.bin"
 DTB_BIN_SIZE=4
+SOC_FILTER=()
+BOARD_FILTER=()
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -31,6 +34,18 @@ while [[ $# -gt 0 ]]; do
         --kobj)          KOBJ="$2";          shift 2 ;;
         --out)           DTB_BIN="$2";       shift 2 ;;
         --size)          DTB_BIN_SIZE="$2";  shift 2 ;;
+        --soc)
+            shift
+            while [[ $# -gt 0 && "$1" != --* && "$1" != -* ]]; do
+                SOC_FILTER+=("$1"); shift
+            done
+            ;;
+        --board)
+            shift
+            while [[ $# -gt 0 && "$1" != --* && "$1" != -* ]]; do
+                BOARD_FILTER+=("$1"); shift
+            done
+            ;;
         *) echo "[ERROR] Unknown option: $1" >&2; exit 1 ;;
     esac
 done
@@ -58,10 +73,15 @@ make -C "${KERNEL_DIR}" ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- O="../${KOBJ
 DTB_SRC="${KOBJ}/arch/arm64/boot/dts/qcom"
 echo "[INFO] Built $(find "${DTB_SRC}" \( -name '*.dtb' -o -name '*.dtbo' \) | wc -l) qcom DTB(s)"
 
-# Step 4: Build FAT DTB image
+# Step 4: Build FAT DTB image (pass --soc / --board when given)
+_extra_args=()
+for _s in "${SOC_FILTER[@]+"${SOC_FILTER[@]}"}";   do _extra_args+=(--soc   "$_s"); done
+for _b in "${BOARD_FILTER[@]+"${BOARD_FILTER[@]}"}"; do _extra_args+=(--board "$_b"); done
+
 "${SCRIPT_DIR}/build-dtb-image.sh" \
     --dtb-src "${DTB_SRC}" \
     --out "${DTB_BIN}" \
-    --size "${DTB_BIN_SIZE}"
+    --size "${DTB_BIN_SIZE}" \
+    "${_extra_args[@]}"
 
 echo "[INFO] Done: $(ls -lh "${DTB_BIN}" | awk '{print $5, $9}')"
