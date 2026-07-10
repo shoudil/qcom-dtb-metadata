@@ -230,10 +230,10 @@
 			data = /incbin/("./arch/arm64/boot/dts/qcom/glymur-crd-camx.dtbo");
 			type = "flat_dt";
 		};
-    fdt-kodiak-el2.dtbo {
+		fdt-kodiak-el2.dtbo {
 			data = /incbin/("./arch/arm64/boot/dts/qcom/kodiak-el2.dtbo");
-     	type = "flat_dt";
-    };
+     		type = "flat_dt";
+    	};
 	};
 
 	configurations {
@@ -465,7 +465,7 @@
 			compatible = "qcom,glymur-crd-camx";
 			fdt = "fdt-glymur-crd.dtb", "fdt-glymur-crd-camx.dtbo";
 		};
-    conf-58 {
+		conf-58 {
 			compatible = "qcom,qcs6490-iot-el2kvm";
 			fdt = "fdt-qcs6490-rb3gen2.dtb", "fdt-kodiak-el2.dtbo";
 		};
